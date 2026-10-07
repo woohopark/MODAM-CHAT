@@ -40,6 +40,23 @@ function prompt(): HTMLTextAreaElement {
 }
 
 describe('chat UI integration', () => {
+  it('switches dark/light theme with accessible state and keeps the theme across new chats', () => {
+    const toggle = document.getElementById('theme-toggle');
+    expect(toggle?.getAttribute('aria-pressed')).toBe('false');
+    toggle?.click();
+    expect(document.body.classList.contains('dark')).toBe(true);
+    expect(toggle?.getAttribute('aria-pressed')).toBe('true');
+    expect(toggle?.getAttribute('aria-label')).toBe('라이트 모드로 전환');
+    expect(toggle?.querySelector('use')?.getAttribute('href')).toBe('#sun');
+    document.getElementById('new-chat')?.click();
+    expect(document.body.classList.contains('dark')).toBe(true);
+    toggle?.click();
+    expect(document.body.classList.contains('dark')).toBe(false);
+    expect(toggle?.getAttribute('aria-pressed')).toBe('false');
+    expect(document.getElementById('theme-label')?.textContent).toBe('다크 모드로 전환');
+    expect(toggle?.querySelector('use')?.getAttribute('href')).toBe('#moon');
+  });
+
   it('uses unique IDs and enables only the real send button for nonblank input', () => {
     const ids = [...document.querySelectorAll('[id]')].map((node) => node.id);
     expect(new Set(ids).size).toBe(ids.length);

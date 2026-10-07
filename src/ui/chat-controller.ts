@@ -100,10 +100,13 @@ export class ChatController {
       'click',
       () => {
         const dark = document.body.classList.toggle('dark');
-        element('theme-toggle', HTMLButtonElement).setAttribute(
-          'aria-label',
-          dark ? '밝은 화면으로 변경' : '어두운 화면으로 변경',
-        );
+        const toggle = element('theme-toggle', HTMLButtonElement);
+        const label = dark ? '라이트 모드로 전환' : '다크 모드로 전환';
+        toggle.setAttribute('aria-label', label);
+        toggle.setAttribute('aria-pressed', String(dark));
+        toggle.title = label;
+        element('theme-label', HTMLElement).textContent = label;
+        toggle.querySelector('use')?.setAttribute('href', dark ? '#sun' : '#moon');
       },
       options,
     );

@@ -40,6 +40,9 @@
         <symbol id="book" viewBox="0 0 24 24">
           <path d="M12 6c-3-3-7-3-10-2v15c3-1 7-1 10 2 3-3 7-3 10-2V4c-3-1-7-1-10 2zm0 0v15" />
         </symbol>
+        <symbol id="moon" viewBox="0 0 24 24">
+          <path d="M20.5 13A8.5 8.5 0 0 1 11 3.5 8.5 8.5 0 1 0 20.5 13z" />
+        </symbol>
         <symbol id="sun" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="4" />
           <path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2" />
@@ -66,9 +69,16 @@
           <svg><use href="#spark" /></svg>
           <div>프론트엔드 프리뷰<small>실제 AI 연결 전 데모 모드</small></div>
         </div>
-        <button id="theme-toggle" class="profile" aria-label="화면 테마 변경">
-          <span class="avatar">나</span><span>나의 작업 공간<small>개인 공간</small></span
-          ><svg><use href="#sun" /></svg>
+        <button
+          id="theme-toggle"
+          class="profile"
+          aria-label="다크 모드로 전환"
+          title="다크 모드로 전환"
+          aria-pressed="false"
+        >
+          <span class="avatar">나</span
+          ><span>나의 작업 공간<small id="theme-label">다크 모드로 전환</small></span
+          ><svg><use href="#moon" /></svg>
         </button>
       </div>
     </aside>

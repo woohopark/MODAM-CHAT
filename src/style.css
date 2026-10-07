@@ -17,6 +17,7 @@
   box-sizing: border-box;
 }
 body {
+  color-scheme: light;
   margin: 0;
   background: var(--bg);
   color: var(--text);
@@ -609,6 +610,7 @@ body.collapsed #open-sidebar {
   display: grid;
 }
 body.dark {
+  color-scheme: dark;
   --bg: #1c1d21;
   --side: #17181b;
   --text: #e8e9ee;
