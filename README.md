@@ -78,4 +78,4 @@ DOM 회귀 테스트는 양방향 전환, 접근성 상태, 아이콘, 새 대�
 
 ## GitHub 저장소
 
-대상 저장소는 [IRUDAlab/IRUDA-CHAT](https://github.com/IRUDAlab/IRUDA-CHAT)입니다. 푸시 상태와 연결 절차는 [GitHub 문서](docs/GITHUB.md)를 참조합니다.
+대상 저장소는 [woohopark/MODAM-CHAT](https://github.com/woohopark/MODAM-CHAT)입니다. 푸시 상태와 연결 절차는 [GitHub 문서](docs/GITHUB.md)를 참조합니다.
