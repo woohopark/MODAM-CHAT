@@ -2,7 +2,7 @@
 
 ## 직접 의존성
 
-모두 devDependencies입니다.
+모두 devDependencies입니다. 현재 직접 개발 의존성은 12개이며 dependencies 항목은 없습니다. 정확한 버전은 [package.json](../package.json), 전이 의존성은 [package-lock.json](../package-lock.json)을 기준으로 합니다. 별도 패키지 추가 없이 현재 구성을 문서화했습니다.
 
 | 패키지                 | 역할                              |
 | ---------------------- | --------------------------------- |
@@ -34,4 +34,18 @@ npm audit
 
 ## 산출물
 
-src/index.html/public은 소스, dist는 빌드 생성물입니다. dist/node_modules/coverage/.env는 Git 제외합니다. API 키나 레지스트리 인증을 저장소에 넣지 않습니다. 배포 아카이브는 빌드 산출물과 호스팅 설정을 포함합니다.
+src/, 루트 index.html, public/은 소스, dist는 빌드 생성물입니다. dist/node_modules/coverage/.env는 Git 제외합니다. API 키나 레지스트리 인증을 저장소에 넣지 않습니다. 배포 아카이브는 빌드 산출물과 호스팅 설정을 포함합니다.
+
+## 명령과 운영 구분
+
+| 명령                          | 목적                        |
+| ----------------------------- | --------------------------- |
+| npm ci                        | lockfile 기준 재현 설치     |
+| npm run dev                   | 로컬 Vite 개발 서버         |
+| npm run format / format:check | 문서·소스 포맷 수정/검사    |
+| npm run lint / typecheck      | 코드 정적 검사              |
+| npm test / test:coverage      | 동작·커버리지 검사          |
+| npm run build / preview       | 정적 산출물 생성/로컬 확인  |
+| npm run check                 | 코드 변경 시 전체 품질 검사 |
+
+로컬 도구 패키지가 배포 서버 런타임을 뜻하지 않습니다. 환경은 [DEPLOYMENT.md](DEPLOYMENT.md), 제품 범위는 [PRD](../prd.md)를 참조합니다.

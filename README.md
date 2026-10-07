@@ -18,6 +18,19 @@ npm run build        # dist/ 생성
 npm run preview      # 빌드 결과 로컬 확인
 ```
 
+## 핵심 요구사항·작업 문서
+
+| 문서                                                  | 역할                                                  |
+| ----------------------------------------------------- | ----------------------------------------------------- |
+| [prd.md](prd.md)                                      | 요구사항 정의서: 목표·FR/NFR·수용 기준·범위·출시 조건 |
+| [Agent.md](Agent.md)                                  | 에이전트 책임·판단 경계·완료 보고                     |
+| [skill.md](skill.md)                                  | 작업 절차·검증 경로·실제 SKILL.md 연결                |
+| [AGENTS.md](AGENTS.md)                                | 자동화 도구의 저장소 진입 지침                        |
+| [실제 SKILL.md](.skills/feature-development/SKILL.md) | 실행 가능한 단계별 작업 지침                          |
+| [배포 환경](docs/DEPLOYMENT.md)                       | 서비스 주소·비공개 접근·개발/빌드/운영 구분           |
+
+서비스: https://orbit-agi-chat.qkrwnsh1592.chatgpt.site
+
 ## 문서
 
 | 문서                                     | 내용                         |
