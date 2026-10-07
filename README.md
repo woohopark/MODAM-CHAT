@@ -1,17 +1,56 @@
-# Orbit chat frontend
+# Orbit Chat Frontend
 
-ChatGPT의 대화 중심 UI/UX를 참고한 한국어 정적 프론트엔드입니다. 실제 AI, 인증, 서버 저장은 연결되어 있지 않습니다. 대화는 탭 메모리에만 유지되며 새로고침하면 초기화됩니다.
+ChatGPT의 대화 중심 UI/UX를 참고한 한국어 채팅 프론트엔드입니다. 기존 화면을 유지하면서 TypeScript 모듈·테스트·품질 도구·팀 개발 문서를 적용했습니다.
 
-## Run
+> 실제 AGI, 로그인, 서버 저장은 미연결입니다. 데모 응답만 제공하며 대화와 테마는 탭 메모리에 유지됩니다. 새로고침하면 초기화됩니다.
+
+## 실행
+
+Node.js 24.15 이상(24.x)과 npm 10 이상을 사용합니다. `.nvmrc`로 개발 환경을 통일합니다.
 
 ```sh
-python3 -m http.server 3000 --directory dist
+npm ci
+npm run dev
+npm run check         # 포맷·린트·타입·테스트/커버리지·빌드
+npm run test:watch    # 테스트 개발
+npm run format       # 포맷 수정
+npm run build        # dist/ 생성
+npm run preview      # 빌드 결과 로컬 확인
 ```
 
-## AGI integration
+## 문서
 
-`dist/chat-client.js`의 `streamChat({ messages, signal })` 비동기 제너레이터를 실제 API 클라이언트로 교체하세요. `messages`는 `{role, content}` 배열입니다. 텍스트 청크를 `yield`하고 `AbortSignal`을 준수하면 현재 UI의 스트리밍 표시 및 중단 버튼을 그대로 사용할 수 있습니다. 프론트엔드에 API 키를 넣지 말고 서버 프록시에서 관리하세요. 실제 서버 저장과 로그인은 별도 연동이 필요합니다.
+| 문서                                     | 내용                         |
+| ---------------------------------------- | ---------------------------- |
+| [기능 명세](docs/FEATURES.md)            | 기능별 동작·제한·테스트 연결 |
+| [아키텍처](docs/ARCHITECTURE.md)         | 책임 분리·의존 방향·SOLID    |
+| [코드 컨벤션](docs/CODE_CONVENTIONS.md)  | 명명·타입·에러·리뷰          |
+| [테스트](docs/TESTING.md)                | 실행법·테스트 코드·검증 범위 |
+| [검증 기록](docs/VALIDATION.md)          | 실제 검사와 미수행 범위      |
+| [기술 스택](docs/TECH_STACK.md)          | 기술과 선택 이유             |
+| [패키지 관리](docs/PACKAGES.md)          | 의존성·lockfile·업데이트     |
+| [AGI 연결](docs/AGI_INTEGRATION.md)      | 제공자 계약·서버 경계        |
+| [스킬 컨벤션](docs/SKILL_CONVENTIONS.md) | SKILL.md 구조·작업 기준      |
+| [개발 참여](CONTRIBUTING.md)             | 커밋·PR·완료 기준            |
+| [에이전트 지침](AGENTS.md)               | 저장소 자동화 규칙           |
 
-## UI
+## 구조
 
-새 대화 / 대화 전환 / 한국어 IME 지원 / Shift+Enter 줄바꿈 / 응답 중단 / 복사 / 테마 전환 / 반응형 사이드바.
+```text
+src/
+  domain/          # 대화 모델·메모리 저장소
+  application/     # 유스케이스·응답 제공자 계약
+  providers/       # 데모 제공자, 추후 AGI 어댑터
+  ui/              # 렌더링·입력 정책·이벤트
+  main.ts          # 의존성 조립
+  style.css
+ tests/            # 단위·DOM 통합 테스트
+ docs/             # 팀 문서
+ .skills/          # 저장소 작업 스킬
+ public/           # 정적 자산
+ index.html        # 마크업
+```
+
+기업별 표준은 다릅니다. 엄격한 타입 검사, 재현 가능한 패키지 설치, 자동 품질 검사, 동작 중심 테스트, 책임 분리라는 공통 팀 개발 기준을 적용합니다. 특정 기업 내부 규격 인증이나 실제 운영 시스템 완성을 의미하지 않습니다.
+
+GitHub Actions 설정은 포함되어 있습니다. GitHub 팀 저장소에 연결하면 실행할 수 있으며 현재 Sites 소스 저장소에서 Actions 실행을 보장하지 않습니다. main 브랜치 보호·필수 검사·리뷰 정책은 팀 저장소에서 별도로 활성화하세요.
