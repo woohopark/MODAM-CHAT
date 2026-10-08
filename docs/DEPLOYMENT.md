@@ -2,6 +2,10 @@
 
 2026-10-08. 실제 연동 실행은 Node Fastify BFF + FastAPI + 별도 워커 + PostgreSQL이다.
 
+## 사용자 PC의 로컬 실행
+
+MODAM-AGI의 [로컬 PC 안내](https://github.com/woohopark/MODAM-AGI/blob/main/docs/LOCAL_PC.md)를 따른다. Docker + Git + Python으로 `python scripts/local-chat.py setup`, `start`, `account`를 순서대로 실행하고 사용자 PC의 http://localhost:3300에서 접속한다. 일반 PC용 compose는 클라우드 CA 경로를 요구하지 않는다.
+
 ## 이 workspace에서 실행 중인 환경
 
 - 프론트/BFF: `http://127.0.0.1:3000` (workspace 내부).
