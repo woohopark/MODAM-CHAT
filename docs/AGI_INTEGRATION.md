@@ -53,3 +53,7 @@ BFF `/api`와 AGI `/v1`의 아래 경로는 동일하다. 공개 진입점은 BF
 ## 검증 경계
 
 SQLite 단위 테스트는 DB 상태·취소·현재 정책·안전한 장애 복구를 재현한다. 운영 DB는 PostgreSQL이다. 실제 PostgreSQL/BFF/FastAPI/별도 워커/Groq의 3턴 및 브라우저 검증은 검증 기록에 따로 기록한다. 실제 MCP/ERP 연결 및 동시 사용자 부하·물리 IME 검증은 완료로 주장하지 않는다.
+
+## 지식 서비스 연결 갱신
+
+RAG/ONTOLOGY 읽기 MCP의 새 구현·검증은 [기업 조회 연동](KNOWLEDGE_INTEGRATION.md)을 따른다. 이전 미연결 검사 기록과 구분한다.

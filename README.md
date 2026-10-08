@@ -12,4 +12,6 @@ npm run check
 npm run server
 ```
 
-`npm run check`는 클라이언트와 BFF를 모두 빌드한다. 개발 Vite `/api`는 3000 BFF로 proxy한다. 키는 AGI 서버 환경에만 두며 프론트에는 포함하지 않는다. 실제 MCP/ERP는 미연결이다. 기존 Sites 주소는 별도 정적 데모이며 실제 서비스는 현재 workspace의 loopback에서 실행한다. Docker 외부 배포에는 운영 서버/도메인이 필요하다.
+`npm run check`는 클라이언트와 BFF를 모두 빌드한다. 개발 Vite `/api`는 3000 BFF로 proxy한다. 키는 AGI 서버 환경에만 두며 프론트에는 포함하지 않는다. RAG/ONTOLOGY 읽기 MCP는 AGI에서 연결하고 ERP 변경은 미연결이다. 기존 Sites 주소는 별도 정적 데모이며 실제 서비스는 현재 workspace의 loopback에서 실행한다. Docker 외부 배포에는 운영 서버/도메인이 필요하다.
+
+[기업 조회 시나리오·검증](docs/KNOWLEDGE_INTEGRATION.md)을 참고한다.

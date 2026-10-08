@@ -40,3 +40,5 @@ name/description YAML frontmatter와 적용 조건·입력·순서·검증·완�
 ## 실제 AGI 연동 — FR-03/04/06/07/13~16
 
 승인 범위는 로그인·서버 대화 저장·멀티턴·삭제·영속 실행이다. [API 계약](docs/AGI_INTEGRATION.md)과 [배포](docs/DEPLOYMENT.md)를 따른다. domain/application/providers/ui와 server(BFF)를 분리한다. 제공자 이벤트는 ID·상태·최종 답변을 전달하고 ConversationRepository는 복원/삭제를 담당한다. 기존 문자열 데모 제공자는 명시적인 데모 빌드에서만 쓴다. 새 서버/제공자 경계를 성공·오류·취소·재구독·권한 테스트로 검증하며 다크/한국어 입력 회귀를 유지한다. Git/클라이언트/로그에 세션/Groq 비밀을 넣지 않는다. loopback 실행을 외부 운영 배포로 보고하지 않는다.
+
+기업 지식 연동의 시나리오·근거·현재 ACL 검증은 [연동 문서](docs/KNOWLEDGE_INTEGRATION.md)를 따른다.

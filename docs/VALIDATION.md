@@ -46,3 +46,7 @@ prd.md, Agent.md, skill.md, AGENTS.md, 실제 SKILL.md와 배포/패키지 문�
 ## 다크 모드 보완 검증 — FR-11
 
 2026-10-07 다크 모드 버튼의 이름·아이콘·aria-pressed 상태와 기본 입력 UI 테마를 보완했습니다. 양방향 전환 및 새 대화에서 테마 유지 회귀 테스트를 추가했습니다. npm run check(포맷/린트/타입/커버리지/빌드)를 실행해 5개 파일 32개 테스트 통과를 확인했습니다. 대상 모듈 커버리지는 statements/functions/lines 100%, branches 97.56%입니다. 실제 브라우저 대비/레이아웃 검증은 미수행입니다.
+
+## 지식 서비스 연결 갱신
+
+RAG/ONTOLOGY 읽기 MCP의 새 구현·검증은 [기업 조회 연동](KNOWLEDGE_INTEGRATION.md)을 따른다. 이전 미연결 검사 기록과 구분한다.

@@ -118,3 +118,27 @@ it('does not send a new request while canonical history is loading', async () =>
   await restore;
   expect(service.isBusy).toBe(false);
 });
+
+it('keeps enterprise mode and provenance through multi-turn requests and changes new chat mode', async () => {
+  const requests: { mode: string | undefined; conversationId: string | undefined }[] = [];
+  const enterprise: ChatProvider = {
+    async *stream(request) {
+      requests.push({ mode: request.mode, conversationId: request.conversationId });
+      yield { type: 'accepted', conversationId: 'enterprise-server', runId: 'enterprise-run' };
+      yield { type: 'message', text: '재고 108개\n\n근거: ontology:fixture (v1)' };
+    },
+  };
+  const service = new ChatService(new ChatStore(), enterprise);
+  service.mode = 'enterprise';
+  await service.send('poc-warehouse 범위 inventory:B:C 재고 조회');
+  await service.send('같은 물품의 규정도 확인');
+  expect(requests).toEqual([
+    { mode: 'enterprise', conversationId: undefined },
+    { mode: 'enterprise', conversationId: 'enterprise-server' },
+  ]);
+  expect(service.store.snapshot().chats[0]?.messages[3]?.content).toContain('근거:');
+  service.newChat();
+  service.mode = 'general';
+  await service.send('안녕');
+  expect(requests[2]?.mode).toBe('general');
+});

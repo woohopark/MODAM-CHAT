@@ -63,3 +63,7 @@ compose가 DB health 후 immutable Alembic migration을 수행하고 API/워커�
 기존 주소 `https://orbit-agi-chat.qkrwnsh1592.chatgpt.site`는 소유자 제한 정적 데모로 유지한다. Sites는 Cloudflare Worker HTTP handler를 지원하지만 Fastify/Python/PostgreSQL 프로세스를 그대로 호스팅하지 않는다. 외부에서 접근 가능한 별도 AGI/BFF origin 없이는 이 workspace loopback에 접속할 수 없다. 이번 수정본을 로그인만 뜨고 API가 동작하지 않는 정적 사이트로 재배포하지 않는다.
 
 운영 서버가 제공되면 동일 compose를 배치하고 TLS reverse proxy에서 도메인의 `/`와 `/api`를 BFF로 연결한다. `MODAM_NODE_ENV=production`, `MODAM_PUBLIC_ORIGINS=https://실제도메인`을 명시한다. 게이트웨이 request/rate limit, DB backup·보존 정책, worker 모니터링과 재시작을 운영 환경에서 검증한다. 운영 서버/도메인 정보가 확인되면 실제 접근 URL을 별도 검증한다.
+
+## 지식 서비스 연결 갱신
+
+RAG/ONTOLOGY 읽기 MCP의 새 구현·검증은 [기업 조회 연동](KNOWLEDGE_INTEGRATION.md)을 따른다. 이전 미연결 검사 기록과 구분한다.

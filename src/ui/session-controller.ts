@@ -31,7 +31,7 @@ export class SessionController {
     const mode = element('conversation-mode', HTMLSelectElement);
     for (const [value, text] of [
       ['general', '일반 대화'],
-      ['enterprise', '기업 조회'],
+      ['enterprise', '기업 자료 조회'],
     ]) {
       const option = document.createElement('option');
       option.value = value ?? '';
@@ -43,6 +43,10 @@ export class SessionController {
       () => {
         this.service.newChat();
         this.service.mode = mode.value === 'enterprise' ? 'enterprise' : 'general';
+        this.view.prompt.placeholder =
+          this.service.mode === 'enterprise'
+            ? '조회할 자료 범위와 질문을 입력하세요'
+            : '무엇이든 물어보세요';
       },
       options,
     );
