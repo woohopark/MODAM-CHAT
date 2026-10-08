@@ -12,6 +12,15 @@ export class ChatStore {
     return structuredClone({ chats: this.chats, currentId: this.currentId });
   }
 
+  replace(chats: Chat[], currentId: string | null = null): void {
+    this.chats = chats;
+    this.currentId = currentId;
+  }
+
+  find(id: string): Chat | undefined {
+    return this.chats.find((chat) => chat.id === id);
+  }
+
   newChat(): void {
     this.currentId = null;
   }
@@ -23,8 +32,8 @@ export class ChatStore {
 
   beginReply(input: string): { chat: Chat; answer: ChatMessage } {
     const content = input.trim();
-    if (!content || content.length > MAX_MESSAGE_LENGTH) {
-      throw new Error('Message must contain 1 to 12000 characters');
+    if (!content || Array.from(content).length > MAX_MESSAGE_LENGTH) {
+      throw new Error('Message must contain 1 to 4000 characters');
     }
     let chat = this.chats.find((item) => item.id === this.currentId);
     if (!chat) {

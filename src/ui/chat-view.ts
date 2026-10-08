@@ -82,7 +82,8 @@ export class ChatView {
     content.className = 'assistant-content';
     const label = document.createElement('div');
     label.className = 'response-label';
-    label.textContent = 'ORBIT · 데모 응답';
+    label.textContent =
+      document.body.dataset.chatMode === 'agi' ? 'MODAM · AI 응답' : 'ORBIT · 데모 응답';
     if (!message.content && message.status === 'streaming') {
       const typing = document.createElement('div');
       typing.className = 'typing';

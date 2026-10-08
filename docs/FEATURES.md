@@ -1,47 +1,16 @@
-# 기능 명세
+# 기능·검증 매핑
 
-## 기능별 검증
+현재 요구사항은 [PRD 2.0](../prd.md)이 기준이다.
 
-| 기능            | 동작·수용 조건                                    | 자동 테스트 파일 (`tests/`)       |
-| --------------- | ------------------------------------------------- | --------------------------------- |
-| 첫 화면/새 대화 | 환영 화면, 생성 중단, 입력 초기화, 기존 목록 유지 | chat-store, chat-service, chat-ui |
-| 대화 목록/전환  | 최신 생성 대화 우선, 기존 대화 복원               | chat-store, chat-ui               |
-| 추천 질문       | 입력창에 채움, 자동 전송하지 않음                 | chat-ui                           |
-| 전송            | 공백 제외 1–12,000자, 사용자 다음 답변 표시       | chat-store, chat-service, chat-ui |
-| 한글 입력       | IME 조합 중 전송 금지, Shift+Enter 줄바꿈         | input-policy, chat-ui             |
-| 스트리밍        | 청크를 순서대로 결합                              | chat-service, demo-chat-provider  |
-| 중단            | 늦은 청크 무시, 부분 텍스트 보존                  | chat-service, demo-chat-provider  |
-| 중복 요청       | 생성 중 추가 전송 무시                            | chat-service                      |
-| 오류/빈 응답    | 오류 안내, 재전송 가능                            | chat-service                      |
-| 복사            | Clipboard API, 거부 시 직접 선택 안내             | chat-ui                           |
-| 테마            | 밝은/어두운 화면 전환                             | chat-ui                           |
-| 사이드바        | 모바일 열기/닫기, 배경 클릭 닫기                  | chat-ui                           |
-| 안전한 텍스트   | 사용자/제공자 내용을 HTML로 해석하지 않음         | chat-ui                           |
-| 정리            | HMR 교체 시 이벤트 해제와 생성 중단               | chat-ui                           |
+| 기능 / PRD                                       | 구현                                   | 자동 검사                              |
+| ------------------------------------------------ | -------------------------------------- | -------------------------------------- |
+| 환영·입력·추천·복사·다크·사이드바 FR-01/05/10~12 | ui                                     | chat-ui·input-policy                   |
+| 새 대화·전환·응답 중단 FR-02/03/07/08            | domain/application                     | chat-store·chat-service                |
+| Unicode 4,000자 FR-04                            | domain / AGI Submission                | chat-store·remote-chat-service·AGI API |
+| 실제 응답·SSE·재구독·상태 fallback FR-06/09      | AgiChatProvider                        | agi-provider                           |
+| 서버 복원·삭제 FR-03/13/15                       | HttpConversationRepository·ChatService | agi-provider·remote-chat-service       |
+| 로그인·세션·origin FR-14                         | SessionController·BFF·AGI              | bff·AGI API + Chromium 실통신          |
+| 멀티턴·서버 canonical history FR-16              | AGI worker·Groq                        | AGI worker + 실제 3턴 Groq             |
+| 재시작·lease NFR-09                              | PG job + worker                        | AGI worker + Docker 프로세스 재시작    |
 
-파일 이름에는 `.test.ts`가 붙습니다. jsdom 테스트는 실제 CSS 레이아웃·성능·접근성 인증을 대체하지 않습니다.
-
-## 상태와 단축키
-
-메시지 상태는 `complete`, `streaming`, `cancelled`, `error`입니다. 취소·오류 답변은 다음 모델 문맥에서 제외합니다. 부분 텍스트는 보존하고 내용이 없으면 중단 안내를 표시합니다. 빈 제공자 응답은 오류입니다.
-
-첫 메시지에서 대화를 생성하며 빈 대화를 목록에 미리 추가하지 않습니다. 제목은 첫 질문 앞 32 UTF-16 코드 단위입니다.
-
-| 입력        | 동작                   |
-| ----------- | ---------------------- |
-| Enter       | 조합 중이 아닐 때 전송 |
-| Shift+Enter | 줄바꿈                 |
-| Cmd/Ctrl+K  | 새 대화                |
-| Escape      | 모바일 사이드바 닫기   |
-
-## 미구현
-
-실제 모델, 로그인, 서버 저장, 첨부, 검색, 음성, Markdown 렌더링, 대화 제목 수정/삭제는 미구현입니다. 대화와 테마는 탭 메모리에만 유지됩니다.
-
-## 다크 모드 지원 — FR-11
-
-사이드바 하단의 **다크 모드로 전환** 버튼으로 라이트/다크 모드를 바꿉니다. 다크 모드에서는 버튼이 **라이트 모드로 전환**으로 바뀝니다. 모바일에서는 사이드바를 연 뒤 사용합니다.
-
-배경·사이드바·본문·입력창·대화 말풍선·테두리와 브라우저 기본 입력 UI에 테마를 적용합니다. 버튼의 접근성 이름, aria-pressed 상태, 달/해 아이콘을 동기화합니다. 새 대화를 만들어도 테마를 유지하며 새로고침하면 기본 라이트 모드로 초기화합니다. 테마 자동 저장/시스템 테마 자동 감지는 현재 범위에 포함하지 않습니다.
-
-DOM 회귀 테스트는 양방향 전환, 접근성 상태, 아이콘, 새 대화 중 테마 유지를 검사합니다. 실제 브라우저의 색상 대비/레이아웃 확인은 별도입니다.
+일반 대화와 기업 조회를 구분한다. 기업 도구가 없으면 미연결 상태다. 첨부/음성/Markdown HTML/실제 MCP/ERP는 미구현이다. 대화는 서버 보관, 테마는 탭 메모리다. 자동·실브라우저·외부 배포 결과는 [검증 기록](VALIDATION.md)에서 구분한다.

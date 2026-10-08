@@ -1,48 +1,18 @@
-# 아키텍처와 SOLID
+# 코드 구조와 책임
 
-## 의존 방향
-
-```mermaid
-flowchart TD
-  Main[main.ts: 조립] --> Controller[ChatController]
-  Main --> Service[ChatService]
-  Main --> Provider[DemoChatProvider]
-  Controller --> View[ChatView]
-  Controller --> Service
-  Service --> Store[ChatStore]
-  Service --> Contract[ChatProvider 계약]
-  Provider -. 구현 .-> Contract
-  Store --> Model[Chat 모델]
+```text
+src/domain        ChatStore·입력 제약·로컬 화면 스냅샷
+src/application   ChatService·ChatProvider·ConversationRepository 포트
+src/providers     AGI HTTP/SSE 제공자·서버 대화 repository·명시적 데모
+src/ui            DOM·입력·테마·제품 로그인
+src/main.ts       생성자 주입·운영/데모 조립
+server/           Fastify BFF·opaque cookie·origin·private AGI proxy
 ```
 
-`domain`은 DOM·Vite·네트워크를 참조하지 않습니다. `application`은 데모 제공자를 참조하지 않습니다. 제공자 선택은 `main.ts`에서만 하며 생성자 주입을 사용합니다.
+domain은 DOM/HTTP를 모르고 application은 구체 제공자/DB를 모른다. repository는 소유 대화 복원/삭제, provider는 신규 실행·재구독·명시적 취소를 담당한다. 문자열 데모와 typed ProviderEvent를 같은 포트로 지원하며 신규 AGI 응답은 최종 JSON 검증 후 텍스트 한 번을 반영한다.
 
-| 모듈             | 책임                                    |
-| ---------------- | --------------------------------------- |
-| ChatStore        | 입력 제약, 대화 생성/선택, 메모리 상태  |
-| ChatService      | 요청 실행·중복 방지·취소·완료·오류 조율 |
-| ChatProvider     | 입력/스트림 계약                        |
-| DemoChatProvider | 데모 문장과 취소 가능한 청크 생성       |
-| ChatView         | DOM 표시, 입력 상태, 복사 피드백        |
-| ChatController   | 사용자 이벤트를 유스케이스로 연결       |
-| main.ts          | 객체 생성과 의존성 연결                 |
+ChatStore의 화면 id와 serverId를 분리하여 첫 생성 응답이 도착할 때 서버 ID를 결합한다. ChatService는 AbortController identity로 늦은 이전 이벤트가 새 요청의 busy/답변을 변경하지 못하게 한다. 비동기 history loading도 selection version으로 늦은 응답을 무시한다. 진행 중 run은 복원 시 신규 전송 없이 구독을 재개한다.
 
-## SOLID
+브라우저→BFF는 동일 origin opaque 쿠키, BFF→AGI는 private Bearer HTTP. AGI가 신원·정책·canonical history·PostgreSQL job/event를 소유하며 별도 워커가 Groq를 호출한다. 상세 계약은 [AGI 연동](AGI_INTEGRATION.md). SSE 연결 단절과 명시적 취소를 구분한다.
 
-- **SRP:** 상태·요청 조율·제공자·DOM·이벤트의 변경 이유를 분리합니다.
-- **OCP:** 제공자 구현을 추가하고 조립 지점만 바꾸어 응답 출처를 확장합니다. 유스케이스에 모델별 분기를 넣지 않습니다.
-- **LSP:** 모든 제공자는 순서 있는 문자열 청크와 AbortSignal 계약을 지켜야 합니다.
-- **ISP:** 제공자 계약은 `stream` 하나입니다. 업로드/로그인 같은 무관한 메서드를 넣지 않습니다.
-- **DIP:** 서비스는 구체 제공자 대신 ChatProvider 계약에 의존하며 테스트도 동일 계약 대역을 사용합니다.
-
-SOLID는 판단 기준이지 클래스 개수를 늘리는 목표가 아닙니다. 아직 필요 없는 인증·저장 서버 추상 계층을 만들지 않습니다.
-
-## 동시성·상태
-
-활성 요청 하나만 허용합니다. 중단 후 도착한 청크는 서비스에서 다시 취소 신호를 확인해 버립니다. 이전 요청의 완료 처리는 현재 활성 요청이 같은 요청일 때만 busy를 해제합니다. 취소 직후 시작된 새 요청을 이전 요청이 덮어쓰지 않아야 합니다.
-
-UI 조회는 복제한 스냅샷을 사용합니다. 현재는 청크마다 대화 스냅샷과 메시지 DOM을 다시 생성합니다. 실제 스트리밍 빈도/대화 길이가 커지면 측정 후 프레임 배치·부분 렌더링을 도입하세요. 대규모 성능 보장을 주장하지 않습니다.
-
-## ADR-001: 기존 HTML/CSS 유지
-
-한 화면에 필요한 도구만 사용하여 TypeScript + Vite로 관리합니다. React/라우터/상태 라이브러리는 UI 규모·팀 역량·요구가 커질 때 별도 ADR로 검토합니다. 프레임워크 추가 자체를 기업 표준으로 보지 않습니다.
+사용자/모델 텍스트는 textContent로만 표시한다. 세션/키는 프론트 상태나 로그에 저장하지 않는다. 다크 모드/CSS/한국어 IME 규칙은 기존 UI 경계를 유지한다. SOLID·SRP·OCP·DIP·ISP는 [코드 규칙](CODE_CONVENTIONS.md)을 따른다.

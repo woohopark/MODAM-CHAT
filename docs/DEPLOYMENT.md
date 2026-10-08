@@ -1,56 +1,61 @@
-# 배포 환경과 운영 범위
+# MODAM 채팅 실행·배포
 
-## 현재 서비스
+2026-10-08. 실제 연동 실행은 Node Fastify BFF + FastAPI + 별도 워커 + PostgreSQL이다.
 
-- 주소: https://orbit-agi-chat.qkrwnsh1592.chatgpt.site
-- 호스팅: OpenAI Sites 관리형 정적 사이트(Cloudflare 호환 정적 산출물)
-- 현재 접근: 소유자만 허용된 비공개 사이트; 접근 계정으로 로그인해야 확인 가능
-- 실제 제품 상태: 데모 채팅 프론트엔드, 실제 AGI 서버 미연결
-- 환경 구분: 로컬 개발/로컬 빌드 미리보기/현재 서비스; 별도 원격 스테이징 환경 없음
+## 이 workspace에서 실행 중인 환경
 
-현재 주소는 배포된 서비스 주소입니다. dev/preview 명령의 로컬 주소와 다릅니다. Sites 접근 정책과 제품 자체 로그인 기능도 서로 다릅니다.
+- 프론트/BFF: `http://127.0.0.1:3000` (workspace 내부).
+- AGI: `http://127.0.0.1:8000`, PostgreSQL: loopback 5432. 브라우저는 AGI에 직접 요청하지 않는다.
+- Docker 전체 스택: 검증 후 `http://127.0.0.1:3300`. 외부 운영 배포와 구분한다.
+- 최초 관리자 username/password: `/workspace/modam-agi/.local/chat-runtime.json`의 보호된 로컬 파일(0600). Git/브라우저 JS/로그에 비밀번호를 넣지 않는다. 계정을 다른 환경에 옮길 때는 그 환경에서 명시적으로 새로 만든다.
+- Groq 키는 AGI `.local/groq.env`(0600). `.local/with-runtime`은 키·DB URL을 자식 프로세스의 환경변수로만 주입한다. 새 채팅 workspace에 파일·실행 프로세스가 자동 공유된다고 가정하지 않는다.
 
-## 개발·빌드·서비스 실행 구분
+## 개발 실행
 
-| 구분        | 환경/역할                                                                  |
-| ----------- | -------------------------------------------------------------------------- |
-| 개발        | Node.js 24.15 이상 24.x, npm 10 이상, Vite 개발 서버                       |
-| 검사        | ESLint/TypeScript/Vitest/jsdom/Prettier                                    |
-| 빌드        | npm run build → dist/ 정적 HTML/CSS/JS                                     |
-| 서비스      | 정적 파일을 브라우저에 제공; Node API 서버를 이 프로젝트에서 실행하지 않음 |
-| 저장소 설정 | .openai/hosting.json의 기존 project_id와 static.directory=dist 유지        |
-| 프론트 저장 | 탭 메모리; DB/오브젝트 저장소 미사용                                       |
-| 외부 자산   | Google Fonts; 실패 시 시스템 폰트로 표시                                   |
+AGI에서 안전하게 환경변수 `MODAM_DATABASE_URL`, `GROQ_API_KEY`를 주입하고:
 
-현재 API 비밀 값, DB 바인딩, 서버 Worker 코드, 컨테이너/EC2/Nginx 구성은 이 프로젝트에 없습니다. Node는 개발/검사/빌드 환경이며 서버측 AI 응답 런타임을 뜻하지 않습니다.
-
-## 로컬 실행
-
-```sh
-npm ci
-npm run dev
-npm run check
-npm run preview
+```bash
+uv sync --frozen
+uv run alembic upgrade head
+uv run modam-create-user your-id --admin
+uv run modam-api
+# 별도 터미널, 동일 DB와 Groq 환경
+uv run modam-worker
 ```
 
-preview는 선행 build가 필요하며 npm run check의 마지막 단계에서도 빌드를 수행합니다. 기본 포트는 Vite dev 5173, preview 4173이고 사용 중이면 실제 서버 출력 주소를 확인합니다.
+이 workspace의 보안 주입기를 사용할 때는 각 명령 앞에 `.local/with-runtime`을 붙인다. migration은 저장소의 migrations/와 alembic.ini를 사용한다; wheel 단독에는 운영 migration 폴더가 포함되지 않는다.
 
-## 배포 흐름
+CHAT에서:
 
-1. 요구사항·코드·문서를 확인하고 관련 검사를 완료합니다.
-2. 배포할 소스 커밋을 원격 저장소와 일치시킵니다.
-3. 같은 소스의 dist와 호스팅 설정을 배포 아카이브로 준비합니다.
-4. 기존 사이트의 접근 정책을 유지한 채 저장 버전을 배포합니다.
-5. 호스팅 결과의 succeeded와 URL을 확인해 전달합니다.
+```bash
+npm ci
+npm run build
+npm run server
+# 개발 HMR: BFF는 npm run server:dev, 다른 터미널에서 npm run dev
+```
 
-GitHub Actions 파일은 품질 검사 설정이며 배포 자동화를 구현하지 않습니다. 현재 원격 Actions 실행/브랜치 보호를 활성화하지 않았습니다. 문서만 변경할 때는 소스 문서 동기화와 기존 서비스 주소 확인으로 완료할 수 있습니다.
+Vite 5173은 `/api`를 BFF 3000으로 proxy한다. production은 빌드된 서버를 Node로 실행하며 tsx/TypeScript/Vite는 운영 의존성이 아니다. 정적 데모만 필요하면 `VITE_CHAT_MODE=demo npm run build`로 명시한다.
 
-## 실패 복구와 이력
+## Docker 전체 스택
 
-실패한 배포는 원인을 수정하고 다시 검사한 산출물로 재배포합니다. 이전 버전 복원은 Sites의 기존 저장 버전과 당시 접근 정책을 확인해 진행하며, 현재 사용자 요청/권한에 따릅니다. 자동 롤백 파이프라인과 24시간 운영 모니터링은 구성하지 않았습니다.
+네 프로젝트가 `/workspace/modam-{chat,agi,rag,ontology}` 구조여야 한다. compose는 AGI 저장소 `deployment/compose.yaml`에 있다. RAG/ONTOLOGY는 아직 실행 서비스가 없으므로 생성/복제하지 않는다.
 
-기능 코드 검사 결과는 [VALIDATION.md](VALIDATION.md)에 기록합니다. 실제 사이트 현재 상태가 최종 기준이며 주소/접근/저장 범위가 바뀌면 이 문서를 갱신합니다.
+1. `deployment/compose.env.example`을 Git 제외 `.local/compose.env`로 복사하고 충분한 URL-safe 랜덤 DB 비밀번호와 신뢰하는 CA bundle을 지정한다. 키 값은 `.local/groq.env`에만 둔다.
+2. AGI 저장소에서 다음을 실행한다.
 
-## 향후 AGI 서버
+```bash
+docker compose --env-file .local/compose.env -f deployment/compose.yaml up --build -d
+docker compose --env-file .local/compose.env -f deployment/compose.yaml exec agi modam-create-user your-id --admin
+```
 
-AGI 서버 위치·운영 런타임·API·인증은 미정입니다. 확정 후 서버 프록시/비밀 관리/시간 제한/취소/요청 제한을 구성하고 필요 시 환경변수를 추가합니다. VITE_*는 클라이언트 공개 값이므로 비밀 키를 넣지 않습니다. [AGI 연결 계약](AGI_INTEGRATION.md)을 따릅니다.
+3. `http://127.0.0.1:3300`에서 로그인한다. Postgres/AGI/워커는 Docker 내부 네트워크이고 BFF만 loopback 포트를 공개한다.
+
+compose가 DB health 후 immutable Alembic migration을 수행하고 API/워커를 시작한다. data volume을 보존한다. `down -v`는 데이터 삭제이므로 일반 정리/배포 명령으로 쓰지 않는다. CA는 빌드 secret 및 runtime read-only mount이며 TLS 검증을 끄지 않는다. Groq 키는 worker에만 env_file로 주입하며 image에 복사하지 않는다.
+
+## 외부 운영 배포 상태
+
+현재 관리형 환경에는 운영 서버 자격증명·도메인·포트 공개 기능이 연결되어 있지 않다. 따라서 위 loopback 주소는 사용자 PC에서 직접 접속하는 공개 주소가 아니다.
+
+기존 주소 `https://orbit-agi-chat.qkrwnsh1592.chatgpt.site`는 소유자 제한 정적 데모로 유지한다. Sites는 Cloudflare Worker HTTP handler를 지원하지만 Fastify/Python/PostgreSQL 프로세스를 그대로 호스팅하지 않는다. 외부에서 접근 가능한 별도 AGI/BFF origin 없이는 이 workspace loopback에 접속할 수 없다. 이번 수정본을 로그인만 뜨고 API가 동작하지 않는 정적 사이트로 재배포하지 않는다.
+
+운영 서버가 제공되면 동일 compose를 배치하고 TLS reverse proxy에서 도메인의 `/`와 `/api`를 BFF로 연결한다. `MODAM_NODE_ENV=production`, `MODAM_PUBLIC_ORIGINS=https://실제도메인`을 명시한다. 게이트웨이 request/rate limit, DB backup·보존 정책, worker 모니터링과 재시작을 운영 환경에서 검증한다. 운영 서버/도메인 정보가 확인되면 실제 접근 URL을 별도 검증한다.

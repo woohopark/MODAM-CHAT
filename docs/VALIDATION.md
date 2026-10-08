@@ -1,5 +1,22 @@
 # 검증 기록
 
+## 실제 CHAT↔AGI 구축 — 2026-10-08
+
+- npm run check: Prettier·ESLint 경고 0·TS strict·73개 테스트·Vite 프론트와 BFF JS 빌드 통과.
+- 커버리지 대상: domain/application/providers/input-policy + server/app.ts. statements 95.89%, branches 95.04%, functions 90%, lines 96.85%. DOM 전체/부하 수치가 아니다.
+- npm audit --omit=dev: 실행 시점 알려진 운영 의존성 취약점 0건.
+- AGI uv sync --frozen·Ruff lint/format·mypy strict·36개 pytest·42개 합성 경계 평가·v0.3.0 wheel/sdist 통과.
+- 실제 BFF→AGI→PostgreSQL 워커→Groq 3턴: 이전 프로젝트 이름/언어 재참조, SSE event, 동일 request_id 재전송, 6메시지 복원, HttpOnly cookie 확인.
+- Docker 전체 스택의 실제 3턴과 BFF/API/worker 재시작 후 session/history 복원·다음 턴 맥락, 생성 전/후 취소, 사용자 자원 격리, admin 권한 거절 확인.
+- 기업 조회는 실제 Groq 계획·정확한 current grant 검사 후 도구 미연결을 not_available/tool_not_connected로 반환. 실제 MCP가 성공했다고 주장하지 않는다.
+- Chromium 로그인·실제 2턴 Groq·reload 복원·다크 CSS·모바일 sidebar·합성 한글 composition event 확인. 물리 IME·200% 확대·전체 색상 대비는 미검증.
+- 비동기 history 복원 중 신규 전송 경합을 추가로 차단하고 회귀 검사했다. 늦은 실행 이벤트/복원 응답은 새 대화 상태를 덮지 않는다.
+- 소스/문서 상대 링크 및 비밀 패턴 검사. 현재 공개 Sites 데모는 재배포하지 않았으며 workspace 내부 실행을 외부 운영 배포로 표시하지 않는다.
+
+AGI .local/reports의 chat-live-http.json, chat-docker-live.json, chat-docker-restart.json, chat-enterprise-live.json, chat-browser.json은 실제 실행 증거(로컬 Git 제외)다. opt-in 실제 HTTP 검사는 MODAM-AGI scripts/verify-chat-http.py로 재현한다. 합성/단위 검사와 실제 제공자 검사를 구분한다.
+
+## 이전 단계 기록
+
 ## 기능 코드 검증 — 이전 구현 작업
 
 검증일: 2026-10-07. Node.js 24 환경에서 실행했습니다. 아래 테스트·빌드 결과는 이전 기능 리팩터링 작업의 기록이며 이번 문서 전용 작업에서 다시 실행한 결과가 아닙니다.
@@ -20,7 +37,7 @@
 
 이번 작업에서 실제 브라우저의 CSS 레이아웃·실제 한글 IME·확대/대비 검증은 수행하지 않았습니다. GitHub Actions 설정은 작성했으나 원격 실행이나 브랜치 보호 설정은 수행하지 않았습니다. 실제 AGI API·로그인·저장 서버는 미연동입니다.
 
-## 요구사항 문서 검증 — 이번 작업
+## 요구사항 문서 검증 — 이전 문서 작업
 
 prd.md, Agent.md, skill.md, AGENTS.md, 실제 SKILL.md와 배포/패키지 문서를 추가·갱신했습니다. npm run format:check, Markdown 상대 링크, PRD의 기능 13개/비기능 8개 ID, package.json/lockfile 일치, 직접 개발 의존성 12개 구성을 확인했습니다.
 

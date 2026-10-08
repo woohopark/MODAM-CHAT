@@ -14,9 +14,9 @@ describe('ChatStore', () => {
   it('rejects blank and oversized messages without creating a chat', () => {
     const store = new ChatStore();
     expect(() => store.beginReply('  ')).toThrow();
-    expect(() => store.beginReply('a'.repeat(12_001))).toThrow();
+    expect(() => store.beginReply('a'.repeat(4_001))).toThrow();
     expect(store.snapshot().chats).toHaveLength(0);
-    expect(() => store.beginReply('a'.repeat(12_000))).not.toThrow();
+    expect(() => store.beginReply('a'.repeat(4_000))).not.toThrow();
   });
 
   it('retains existing conversations when creating and selecting another', () => {

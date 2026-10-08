@@ -122,7 +122,7 @@ export class ChatController {
 
   private render(): void {
     this.view.render(this.service.store.snapshot(), this.service.isBusy, (id) => {
-      this.service.selectChat(id);
+      void this.service.selectChat(id).catch(() => this.view.toast('대화를 복원하지 못했습니다.'));
       this.closeSidebar();
       this.view.scrollToBottom();
     });
@@ -150,7 +150,7 @@ export class ChatController {
     } catch {
       this.view.prompt.value = input;
       this.view.resize(false);
-      this.view.toast('메시지는 12,000자 이내로 입력해 주세요.');
+      this.view.toast('메시지는 4,000자 이내로 입력해 주세요.');
     }
   }
 }

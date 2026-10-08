@@ -1,0 +1,34 @@
+#login-dialog {
+  max-width: 420px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--bg);
+  color: var(--text);
+  padding: 28px;
+}
+#login-dialog::backdrop {
+  background: rgb(0 0 0 / 50%);
+}
+#login-form {
+  display: grid;
+  gap: 14px;
+}
+#login-form input:not([type='checkbox']) {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: inherit;
+  color: inherit;
+}
+#login-form button {
+  padding: 12px;
+  border-radius: 8px;
+  background: #6c5ce7;
+  color: white;
+}
+#conversation-mode {
+  background: inherit;
+  color: inherit;
+  border: 0;
+  font: inherit;
+}

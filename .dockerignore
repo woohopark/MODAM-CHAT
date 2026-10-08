@@ -1,0 +1,10 @@
+node_modules
+dist
+dist-server
+coverage
+.git
+.local
+.env
+.env.*
+.sites-runtime
+.artifacts
