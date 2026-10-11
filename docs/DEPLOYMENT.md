@@ -42,7 +42,7 @@ Vite 5173은 `/api`를 BFF 3000으로 proxy한다. production은 빌드된 서�
 
 ## Docker 전체 스택
 
-네 프로젝트가 `/workspace/modam-{chat,agi,rag,ontology}` 구조여야 한다. compose는 AGI 저장소 `deployment/compose.yaml`에 있다. RAG/ONTOLOGY는 아직 실행 서비스가 없으므로 생성/복제하지 않는다.
+네 프로젝트가 `/workspace/modam-{chat,agi,rag,ontology}` 구조여야 한다. compose는 AGI 저장소 `deployment/compose.yaml`에 있다. 현재 RAG/ONTOLOGY 읽기 MCP 서비스가 있다. 일반 채팅만 실행하는 아래 기본 구성과 지식 통합 구성을 구분한다. 지식 통합은 MODAM-AGI docs/LOCAL_PC.md의 compose.local.yaml + compose.knowledge.yaml을 사용한다.
 
 1. `deployment/compose.env.example`을 Git 제외 `.local/compose.env`로 복사하고 충분한 URL-safe 랜덤 DB 비밀번호와 신뢰하는 CA bundle을 지정한다. 키 값은 `.local/groq.env`에만 둔다.
 2. AGI 저장소에서 다음을 실행한다.
@@ -67,3 +67,8 @@ compose가 DB health 후 immutable Alembic migration을 수행하고 API/워커�
 ## 지식 서비스 연결 갱신
 
 RAG/ONTOLOGY 읽기 MCP의 새 구현·검증은 [기업 조회 연동](KNOWLEDGE_INTEGRATION.md)을 따른다. 이전 미연결 검사 기록과 구분한다.
+
+## 사용자 PC 실행·시나리오 갱신 · 2026-10-11
+
+README의 통합/개별 실행과 [화면 테스트 계획](ONTOLOGY_CHAT_TEST_PLAN.md)을 따른다.
+사용자 PC http://localhost:3300과 위 workspace 주소는 다른 환경이다. 이번 문서 변경은 새 배포가 아니다.
